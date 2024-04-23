@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+</head>
+<body>
+    <h1>Reset Password</h1>
+    <!-- Password reset form -->
+    <form id="resetPasswordForm" action="" method="POST">
+        <!-- Hidden input field to store the reset token -->
+        <input type="hidden" id="resetToken" name="resetToken">
+        <!-- Input field for new password -->
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" required>
+        <br>
+        <!-- Input field to confirm the new password -->
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <br>
+        <!-- Submit button to reset password -->
+        <button type="submit">Reset Password</button>
+    </form>
+
+    <script>
+        // JavaScript to extract reset token from URL and populate the hidden input field
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token'); // Extract token from URL
+        document.getElementById('resetToken').value = token; // Set reset token in the hidden input field
+    </script>
+</body>
+</html>

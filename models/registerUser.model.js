@@ -1,7 +1,7 @@
 
-import mongoose from 'mongoose';
+import {model, Schema} from 'mongoose';
 import bcrypt from 'bcrypt';
- const registerUser=new mongoose.Schema({
+ const registerUser=new Schema({
     firstName:{
         type:String,
         required:true
@@ -10,6 +10,7 @@ import bcrypt from 'bcrypt';
         type:String,
         required:true
     },
+   
     email:{
         type:String,
         required:true
@@ -50,4 +51,4 @@ import bcrypt from 'bcrypt';
  })
 
 
- export default mongoose.model("register",registerUser);
+ export default model("register",registerUser);

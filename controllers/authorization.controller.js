@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import sgMail from '@sendgrid/mail'
 
-const sendgridKey = 'hhjhjhf'
+const sendgridKey=''
 
 sgMail.setApiKey(sendgridKey);
 
@@ -80,7 +80,7 @@ const user = {
         from: 'dimitrikwihangana@gmail.com', // sender address
         to: req.body.email, // receiver address
         subject: 'Hello ✔', // Subject line
-        html: 'http://localhost:4000/resetPassword/' + resetToken + '\n\n'
+        html: `http://localhost:4000/autho/reset-password/${resetToken}`
       };
 
       await mailer(mailoptions, "updatePassword");
@@ -91,10 +91,42 @@ const user = {
     }
   },
 
+
+  resetPassword: async (req, res) => {
+    const token  = req.params.resetToken;
+    try{
+      const user = await registerUserModel.findOne({ resetToken: token });
+
+      if (!user) {
+          return res.status(400).json({ message: 'Invalid or expired token' });
+      }
+
+      // Check if token is expired
+      if (user.resetTokenExpires < Date.now()) {
+          return res.status(400).json({ message: 'Token has expired' });
+      }
+if(token===user.resetToken){
+  res.render("welcome",{email:user.email});
+}
+
+else{
+  return res.json({ message: 'Invalid token' });
+}
+} 
+catch (error) {
+console.error('Error resetting password:', error);
+return res.status(500).json({ message: 'Internal server error' });
+}
+
+    
+  },
+
+
+
  // Route to handle resetting password
 changePassword: async (req, res) => {
-  const { token } = req.params;
-  const { newPassword, confirmPassword } = req.body;
+  const token  = req.params.resetToken;
+  
 
   try {
       // Find user by reset token
@@ -108,7 +140,8 @@ changePassword: async (req, res) => {
       if (user.resetTokenExpires < Date.now()) {
           return res.status(400).json({ message: 'Token has expired' });
       }
-
+if(token===user.resetToken) {
+  const { newPassword, confirmPassword } = req.body;
       // Check if passwords match
       if (newPassword !== confirmPassword) {
           return res.status(400).json({ message: 'Passwords do not match' });
@@ -116,11 +149,15 @@ changePassword: async (req, res) => {
 
       // Update user's password
       user.password = newPassword;
+      user.confirmPassword = confirmPassword;
       user.resetToken = undefined;
       user.resetTokenExpires = undefined;
       await user.save();
 
-      return res.status(200).json({ message: 'Password updated successfully' });
+      return res.status(200).json({ message: 'Password updated successfully' });}
+      else{
+        return res.json({ message: 'Invalid token' });
+      }
   } catch (error) {
       console.error('Error resetting password:', error);
       return res.status(500).json({ message: 'Internal server error' });
